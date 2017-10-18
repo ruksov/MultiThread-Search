@@ -10,6 +10,10 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include <vector>
+#include <experimental/filesystem>
+#include <Shlwapi.h>
 
+#pragma comment (lib, "shlwapi.lib")
 
 // TODO: reference additional headers your program requires here
