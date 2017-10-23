@@ -4,10 +4,12 @@
 #include <mutex>
 
 template<typename T>
-class TheadSafeQueue
+class ThreadSafeQueue
 {
 public:
-    ThreadSafeQueue() = default;
+    ThreadSafeQueue()
+    {
+    }
 
     ThreadSafeQueue(const ThreadSafeQueue& other)
     {
@@ -20,7 +22,6 @@ public:
     {
         std::lock_guard<std::mutex> lock(m_lock);
         m_data.push(std::move(value));
-        m_cond.notify_one();
     }
 
     bool TryPop(T& value)
@@ -37,17 +38,13 @@ public:
         return true;
     }
 
-    void WaitAndPop(T& value)
+    bool Empty() const
     {
-        std::unique_lock<std::mutex> lock(m_lock);
-        m_cond.wait(lock, [this] { return !m_data.empty(); });
-
-        value = std::move(m_data.front());
-        m_data.pop();
+        std::lock_guard<std::mutex> lock(m_lock);
+        return m_data.empty();
     }
 
 private:
     mutable std::mutex m_lock;
-    std::condition_variable m_cond;
     std::queue<T> m_data;
 };
